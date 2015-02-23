@@ -88,24 +88,24 @@ final class Pasthis {
 
     private function remaining_time ($timestamp) {
         if ($timestamp == -1)
-            return 'Never expires.';
+            return 'N\'expire jamais.';
         elseif ($timestamp == 0)
-            return 'Expired.';
+            return 'Expiré.';
         elseif ($timestamp == -2)
-            return 'One reading remaining.';
+            return 'Un jour restant.';
 
         $format = function ($t,$s) { return $t ? $t.' '.$s.($t>1 ? 's' : '' ).' ' : ''; };
 
         $expiration = new DateTime ('@'.$timestamp);
         $interval = $expiration->diff (new DateTime (), true);
 
-        $ret = 'Expires in '.$format ($interval->days, 'day');
+        $ret = 'Expire dans '.$format ($interval->days, 'jour(s)');
         if ($interval->days < 31) {
-            $ret .= $format ($interval->h, 'hour');
+            $ret .= $format ($interval->h, 'heure(s)');
             if ($interval->d === 0) {
-                $ret .= $format ($interval->i, 'minute');
+                $ret .= $format ($interval->i, 'minute(s)');
                 if ($interval->h === 0)
-                    $ret .= $format ($interval->s, 'second');
+                    $ret .= $format ($interval->s, 'seconde(s)');
             }
         }
         return rtrim ($ret).'.';
@@ -114,23 +114,23 @@ final class Pasthis {
     function prompt_paste () {
         $this->add_content (
             '<form method="post" action=".">
-                <label for="d">Expiration: </label>
+                <label for="d">Délai d\'expiration : </label>
                 <select name="d" id="d">
-                    <option value="-2">burn after reading</option>
+                    <option value="-2">destruction après lecture</option>
                     <option value="600">10 minutes</option>
-                    <option value="3600">1 hour</option>
-                    <option value="86400" selected="selected">1 day</option>
-                    <option value="604800">1 week</option>
-                    <option value="-1">eternal</option>
+                    <option value="3600">1 heure</option>
+                    <option value="86400" selected="selected">1 jour</option>
+                    <option value="604800">1 semaine</option>
+                    <option value="-1">jamais</option>
                 </select>
                 <input type="text" id="ricard" name="ricard"
-                        placeholder="Do not fill me!" />
-                <input type="submit" value="Send paste">
+                        placeholder="Ne me remplissez pas !" />
+                <input type="submit" value="Envoyer">
                 <span id="left">
                 <input type="checkbox" id="wrap" name="wrap">
-                <label for="wrap">wrap long lines</label>
+                <label for="wrap">forcer le retour à la ligne</label>
                 <input type="checkbox" id="highlighting" name="highlighting">
-                <label for="highlighting">syntax highlighting</label>
+                <label for="highlighting">coloration syntaxique</label>
                 </span>
                 <textarea autofocus required name="p"></textarea>
             </form>'
@@ -252,7 +252,7 @@ final class Pasthis {
         }
 
         if ($fail) {
-            $this->add_content ('<p>Meh, no paste for this id :(</p>');
+            $this->add_content ('<p>Oops... je n\'ai rien pour cet ID :(</p>');
             $this->prompt_paste ();
         } else {
             header ('X-Content-Type-Options: nosniff');
@@ -271,7 +271,7 @@ final class Pasthis {
                 }
                 $this->add_content (
                     '<div id="links">
-                         <a href="./'.$id.'@raw">Raw</a> - <a href="./">New paste</a>
+                         <a href="./'.$id.'@raw">Raw</a> - <a href="./">Nouveau paste</a>
                          <span id="left">'.$this->remaining_time ($result['deletion_date']).'</span>
                      </div>'
                 );
